@@ -10,15 +10,19 @@ void RBTree::insert(RBNode* node) {
 
 	// if there is no root the new Node is now the root
 	if (root == NULL) {
+		// color the root Black
 		node->setColor(BLACK);
 		root = node;
 		return;
 	}
+	// color the new node Red
 	node->setColor(RED);
 	node->setLeftChild(NULL); // NIL-Knoten
 	node->setRightChild(NULL); // NIL-Knoten
+	// make a binary insert
 	binaryInsert(node);
 
+	// fix the violation in the tree
 	RBNode* currentNode = node;
 	while ((currentNode != root) && (currentNode->getColor() == RED) && (currentNode->getParent()->getColor() == RED)) {
 
