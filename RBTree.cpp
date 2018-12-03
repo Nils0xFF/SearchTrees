@@ -54,8 +54,9 @@ void RBTree::insert(RBNode* node) {
 			}
 		}
 		// Case B: parent is right child of grandparent
-		else {			// Case B1: The uncle is also Red
-						// Just recolor the subtree and continue upwards
+		else {			
+			// Case B1: The uncle is also Red
+			// Just recolor the subtree and continue upwards
 			if (currentNode->getUncle() != NULL && currentNode->getUncle()->getColor() == RED) {
 				currentNode->getGrandparent()->setColor(RED);
 				currentNode->getParent()->setColor(BLACK);
@@ -70,14 +71,11 @@ void RBTree::insert(RBNode* node) {
 					currentNode = currentNode->getParent();
 					rotateRight(currentNode);
 				}
-
 				// Case B2a and B2b: currentNode now is the rightChild
 				// rotate right
 				currentNode->getParent()->setColor(BLACK);
 				currentNode->getGrandparent()->setColor(RED);
 				rotateLeft(currentNode->getGrandparent());
-
-			
 			}
 		}
 	}
@@ -113,48 +111,61 @@ void RBTree::binaryInsert(RBNode* n) {
 }
 
 void RBTree::rotateLeft(RBNode* currentNode) {
+	// temp for the right child
 	RBNode *right = currentNode->getRightChild();
-
+	// set the new child
 	currentNode->setRightChild(right->getLeftChild());
 
+	// if the right child is not NULL set the parent
 	if (currentNode->getRightChild() != NULL)
 		currentNode->getRightChild()->setParent(currentNode);
 
+	// set the parent for the temp
 	right->setParent(currentNode->getParent());
 
+	// if current node is the root, swap the root with the right child
 	if (currentNode->getParent() == NULL)
 		root = right;
 
+	// find the new place for the right child
 	else if (currentNode == currentNode->getParent()->getLeftChild())
 		currentNode->getParent()->setLeftChild(right);
 
 	else
 		currentNode->getParent()->setRightChild(right);
 
+	// swap the right child with its parent
 	right->setLeftChild(currentNode);
 	currentNode->setParent(right);
 } 
 
 void RBTree::rotateRight(RBNode* currentNode)
 {
+	// temp for the old left child
 	RBNode *left = currentNode->getLeftChild();
 
+	// set the new left child to be the right child of the left child
 	currentNode->setLeftChild(left->getRightChild());
 
+	// if the new left child exists, set its parent
 	if (currentNode->getLeftChild() != NULL)
 		currentNode->getLeftChild()->setParent(currentNode);
 
+	// set the new parent for the left child
 	left->setParent(currentNode->getParent());
 
+	// if the curent node is the root, replace it with the left child
 	if (currentNode->getParent() == NULL)
 		root = left;
 
+	// find the new position for the current node
 	else if (currentNode == currentNode->getParent()->getLeftChild())
 		currentNode->getParent()->setLeftChild(left);
 
 	else
 		currentNode->getParent()->setRightChild(left);
 
+	// swap the left child with its parent
 	left->setRightChild(currentNode);
 	currentNode->setParent(left);
 }
@@ -171,12 +182,16 @@ int RBTree::height() {
 }
 
 int RBTree::blackHeight(RBNode* start) {
+	// blackheight of the node
 	int black = 0;
-	if (start == NULL) return black;
+	if (start == NULL) return 0;
 	if (start->getColor() == BLACK) black = 1;
+	// when the current Node got no children, return the black height of the Node
 	if (start->getLeftChild() == NULL && start->getRightChild() == NULL) {
 		return black;
 	}
+	// when the current Node got children
+	// return the black height of the subtree with the largest black heigth 
 	if (start->getLeftChild() == NULL) {
 		return (black + blackHeight(start->getRightChild()));
 	}
@@ -187,22 +202,31 @@ int RBTree::blackHeight(RBNode* start) {
 }
 
 bool RBTree::checkSubtree(RBNode* start, int max, int min) {
-
+	// if the tree is empty is correct
 	if (start == NULL) return true;
+	// the root always has to be black
+	if (start->getParent() == NULL && start->getColor() == RED) {
+		return false;
+	}
+	// if the current Node is larger then the max or smaller then the min of the subtree
 	if (start->getKey() > max || start->getKey() < min) return false;
+	// a Red Node cant have a black parent
 	if (start->getParent() != NULL) {
 		if (start->getColor() == RED && start->getParent()->getColor() == RED) {
 			return false;
 		}
 	}
+	// check all the subtrees and compare the black heigths
 	return (checkSubtree(start->getLeftChild(), start->getKey() - 1, min) &&
 		checkSubtree(start->getRightChild(), max, start->getKey() + 1) && (blackHeight(start->getLeftChild()) == blackHeight(start->getRightChild())));
 }
 
 int RBTree::heightSubtree(RBNode* start) {
+	// if the node is NULL or its a leaf the heigth is 0
 	if (start == NULL || (start->getLeftChild() == NULL && start->getRightChild() == NULL)) {
 		return 0;
 	}
+	// calculate the heigth by adding 1 to the largest subtree
 	return (1 + max(heightSubtree(start->getLeftChild()), heightSubtree(start->getRightChild())));
 }
 
@@ -220,22 +244,18 @@ string RBTree::inorder(RBNode* start) {
 string RBTree::levelOrderHelper(RBNode* start) {
 	if (root == NULL) return "";
 	stringstream str;
-		std::queue<RBNode*> q;
-		q.push(root);
-
-		while (!q.empty())
-		{
-			RBNode* temp = q.front();
-			str << temp->toString() << endl;
-			q.pop();
-
-			if (temp->getLeftChild() != NULL)
-				q.push(temp->getLeftChild());
-
-			if (temp->getRightChild() != NULL)
-				q.push(temp->getRightChild());
-		}
-		return str.str();
+	std::queue<RBNode*> q;
+	q.push(root);
+	while (!q.empty()){
+		RBNode* temp = q.front();
+		str << temp->toString() << endl;
+		q.pop();
+		if (temp->getLeftChild() != NULL)
+			q.push(temp->getLeftChild());
+		if (temp->getRightChild() != NULL)
+		q.push(temp->getRightChild());
+	}
+	return str.str();
 }
 
 string RBTree::toString() {
@@ -254,8 +274,8 @@ string RBTree::search(int key) {
 
 void RBTree::clean(RBNode* start) {
 	if (start != NULL) {
-		if (start->getLeftChild()) clean((RBNode*)start->getLeftChild());
-		if (start->getRightChild()) clean((RBNode*)start->getRightChild());
+		if (start->getLeftChild()) clean(start->getLeftChild());
+		if (start->getRightChild()) clean(start->getRightChild());
 		delete start;
 	}
 	return;
