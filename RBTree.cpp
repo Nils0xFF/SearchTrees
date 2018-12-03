@@ -8,6 +8,7 @@ void RBTree::remove(int key, RBNode* start) {
 
 void RBTree::insert(RBNode* node) {
 
+	// if there is no root the new Node is now the root
 	if (root == NULL) {
 		node->setColor(BLACK);
 		root = node;
@@ -33,7 +34,7 @@ void RBTree::insert(RBNode* node) {
 			}
 			// Case A2: The uncle is black
 			else {
-				// Case A2a: currentNode is the left Child
+				// Case A2a: currentNode is the rigth Child
 				// rotate left
 				if (currentNode == currentNode->getParent()->getRightChild()) {
 					currentNode = currentNode->getParent();
@@ -57,16 +58,16 @@ void RBTree::insert(RBNode* node) {
 				currentNode->getUncle()->setColor(BLACK);
 				currentNode = currentNode->getGrandparent();
 			}
-			// Case A2: The uncle is black
+			// Case B2: The uncle is black
 			else {
-				// Case A2a: currentNode is the left Child
+				// Case B2a: currentNode is the left Child
 				// rotate left
 				if (currentNode == currentNode->getParent()->getLeftChild()) {
 					currentNode = currentNode->getParent();
 					rotateRight(currentNode);
 				}
 
-				// Case A2a and A2b: currentNode now is the rightChild
+				// Case B2a and B2b: currentNode now is the rightChild
 				// rotate right
 				currentNode->getParent()->setColor(BLACK);
 				currentNode->getGrandparent()->setColor(RED);
@@ -192,28 +193,6 @@ bool RBTree::checkSubtree(RBNode* start, int max, int min) {
 	}
 	return (checkSubtree(start->getLeftChild(), start->getKey() - 1, min) &&
 		checkSubtree(start->getRightChild(), max, start->getKey() + 1) && (blackHeight(start->getLeftChild()) == blackHeight(start->getRightChild())));
-}
-
-bool RBTree::checkSubtree(RBNode* start) {
-	if ((start->getLeftChild() == NULL) && (start->getRightChild() == NULL)) {
-		return true;
-	}
-	if (start->getLeftChild() == NULL) {
-		if (start->getKey() > start->getRightChild()->getKey()) return false;
-		if (start->getColor() == RED && start->getRightChild()->getColor() == RED) return false;
-		return checkSubtree((RBNode*)start->getRightChild());
-	}
-	if (start->getRightChild() == NULL) {
-		if (start->getKey() < start->getLeftChild()->getKey()) return false;
-		if (start->getColor() == RED && start->getLeftChild()->getColor() == RED) return false;
-		return checkSubtree((RBNode*)start->getLeftChild());
-	}
-	if (start->getKey() < start->getLeftChild()->getKey()) return false;
-	if (start->getKey() > start->getRightChild()->getKey()) return false;
-	if (start->getColor() == RED && start->getLeftChild()->getColor() == RED) return false;
-	if (start->getColor() == RED && start->getRightChild()->getColor() == RED) return false;
-
-	return (checkSubtree(start->getLeftChild()) && checkSubtree(start->getRightChild()) && blackHeight(start->getLeftChild()) == blackHeight(start->getRightChild()));
 }
 
 int RBTree::heightSubtree(RBNode* start) {
