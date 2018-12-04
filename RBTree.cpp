@@ -23,6 +23,7 @@ void RBTree::insert(RBNode* node) {
 	binaryInsert(node);
 
 	// fix the violation in the tree
+	// source: https://www.geeksforgeeks.org/c-program-red-black-tree-insertion/
 	RBNode* currentNode = node;
 	while ((currentNode != root) && (currentNode->getColor() == RED) && (currentNode->getParent()->getColor() == RED)) {
 
@@ -204,13 +205,9 @@ int RBTree::blackHeight(RBNode* start) {
 bool RBTree::checkSubtree(RBNode* start, int max, int min) {
 	// if the tree is empty is correct
 	if (start == NULL) return true;
-	// the root always has to be black
-	if (start->getParent() == NULL && start->getColor() == RED) {
-		return false;
-	}
 	// if the current Node is larger then the max or smaller then the min of the subtree
 	if (start->getKey() > max || start->getKey() < min) return false;
-	// a Red Node cant have a black parent
+	// a red Node cant have a red parent
 	if (start->getParent() != NULL) {
 		if (start->getColor() == RED && start->getParent()->getColor() == RED) {
 			return false;

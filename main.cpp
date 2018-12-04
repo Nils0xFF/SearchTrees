@@ -13,12 +13,12 @@ void RBTreeTest(int*, int);
 
 int main() {
 	srand(time(NULL));
-	int n = 1000000;
+	int n = 1000;
 	int* a = new int[n];
 	for (int i = 1; i <= n; i++) {
 		a[i - 1] = i;
 	}
-	random_shuffle(a, a + n - 1);
+	// random_shuffle(a, a + n - 1);
 	cout << "BinaryTree Test: " << endl;
 	BSTTest(a, n);
 	cout << endl << "RBTree Test: " << endl;
